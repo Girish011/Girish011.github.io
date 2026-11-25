@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const posts = await getCollection('blog');
+const projects = await getCollection('projects');
+const groups = projects
+  .map((proj) => ({ proj, posts: posts.filter((p) => p.data.project === proj.id).sort((a, b) => a.data.order - b.data.order) }))
+  .filter((g) => g.posts.length > 0);
+---
+<Base title="Blog">
+  <h1>Blog</h1>
+  <p class="lede">Writing, grouped by project.</p>
+  {groups.length === 0 ? <p class="empty">No posts yet.</p> : groups.map((g) => (
+    <>
+      <h2><a href={`/projects/${g.proj.id}/`}>{g.proj.data.title}</a></h2>
+      <ol class="list">
+        {g.posts.map((p) => (
+          <li><a href={`/blog/${p.id}/`}>{p.data.title}</a><span class="meta">{p.data.description}</span></li>
+        ))}
+      </ol>
+    </>
+  ))}
+</Base>

@@ -1,0 +1,17 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+const papers = (await getCollection('papers')).sort((a, b) => b.data.year - a.data.year);
+---
+<Base title="Papers">
+  <h1>Papers</h1>
+  {papers.length === 0 ? <p class="empty">Papers will be listed here.</p> :
+    <ul class="list">
+      {papers.map((p) => (
+        <li>
+          {p.data.url ? <a href={p.data.url}>{p.data.title}</a> : p.data.title}
+          <span class="meta">{p.data.authors} · {p.data.venue}, {p.data.year}</span>
+        </li>
+      ))}
+    </ul>}
+</Base>
