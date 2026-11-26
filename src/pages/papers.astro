@@ -4,12 +4,15 @@ import Base from '../layouts/Base.astro';
 const papers = (await getCollection('papers')).sort((a, b) => b.data.year - a.data.year);
 ---
 <Base title="Papers">
-  <h1>Papers</h1>
+  <header class="page-head">
+    <h1>Papers</h1>
+    <p class="lede">Research papers and preprints.</p>
+  </header>
   {papers.length === 0 ? <p class="empty">Papers will be listed here.</p> :
     <ul class="list">
       {papers.map((p) => (
         <li>
-          {p.data.url ? <a href={p.data.url}>{p.data.title}</a> : p.data.title}
+          {p.data.url ? <a href={p.data.url}>{p.data.title}</a> : <strong>{p.data.title}</strong>}
           <span class="meta">{p.data.authors} · {p.data.venue}, {p.data.year}</span>
         </li>
       ))}

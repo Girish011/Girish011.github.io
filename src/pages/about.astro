@@ -2,8 +2,16 @@
 import Base from '../layouts/Base.astro';
 ---
 <Base title="About">
-  <h1>About</h1>
-  <p>I'm Girish. My work is on machine learning for medical imaging and on the tooling around it. The projects and writing on this site are the record of that work.</p>
+  <header class="page-head">
+    <h1>About</h1>
+    <p class="lede">Machine learning for medical imaging, and the tooling around it.</p>
+  </header>
+  <div class="prose">
+    <p>I'm Girish. My work is on machine learning for medical imaging and on the tooling around it. The projects and writing on this site are the record of that work.</p>
+  </div>
   <p class="empty">A fuller bio goes here. Replace this paragraph in <code>src/pages/about.astro</code>.</p>
-  <p><a href="https://github.com/Girish011">github.com/Girish011</a></p>
+  <div class="links">
+    <a class="btn" href="https://github.com/Girish011">GitHub</a>
+    <a class="btn secondary" href="/projects/">Projects</a>
+  </div>
 </Base>

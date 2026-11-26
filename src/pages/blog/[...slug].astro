@@ -7,22 +7,27 @@ export async function getStaticPaths() {
   return posts.map((entry) => {
     const sibs = posts.filter((p) => p.data.project === entry.data.project);
     const i = sibs.findIndex((p) => p.id === entry.id);
-    return { params: { slug: entry.id }, props: { entry, prev: sibs[i - 1], next: sibs[i + 1] } };
+    return { params: { slug: entry.id }, props: { entry, prev: sibs[i - 1], next: sibs[i + 1], total: sibs.length } };
   });
 }
-const { entry, prev, next } = Astro.props;
+const { entry, prev, next, total } = Astro.props;
 const { Content } = await render(entry);
 const projects = await getCollection('projects');
 const project = projects.find((p) => p.id === entry.data.project);
 ---
 <Base title={entry.data.title} description={entry.data.description}>
-  {project && <p class="meta"><a href={`/projects/${project.id}/`}>{project.data.title}</a> · Part {entry.data.order}</p>}
   <article>
-    <h1>{entry.data.title}</h1>
+    <header class="post-head">
+      {project && <p class="kicker"><a href={`/projects/${project.id}/`}>{project.data.title}</a> · Part {entry.data.order} of {total}</p>}
+      <h1>{entry.data.title}</h1>
+      <p class="lede">{entry.data.description}</p>
+    </header>
     <div class="prose"><Content /></div>
   </article>
-  <nav class="post-nav" aria-label="Series">
-    <span>{prev && <a href={`/blog/${prev.id}/`}>&larr; {prev.data.title}</a>}</span>
-    <span>{next && <a href={`/blog/${next.id}/`}>{next.data.title} &rarr;</a>}</span>
-  </nav>
+  {(prev || next) && (
+    <nav class="post-nav" aria-label="Series">
+      {prev && <a class="prev" href={`/blog/${prev.id}/`}><small>&larr; Previous</small>{prev.data.title}</a>}
+      {next && <a class="next" href={`/blog/${next.id}/`}><small>Next &rarr;</small>{next.data.title}</a>}
+    </nav>
+  )}
 </Base>

@@ -4,12 +4,15 @@ import Base from '../layouts/Base.astro';
 const certs = await getCollection('certifications');
 ---
 <Base title="Certifications">
-  <h1>Certifications</h1>
+  <header class="page-head">
+    <h1>Certifications</h1>
+    <p class="lede">Courses and credentials.</p>
+  </header>
   {certs.length === 0 ? <p class="empty">Certifications will be listed here.</p> :
     <ul class="list">
       {certs.map((c) => (
         <li>
-          {c.data.url ? <a href={c.data.url}>{c.data.title}</a> : c.data.title}
+          {c.data.url ? <a href={c.data.url}>{c.data.title}</a> : <strong>{c.data.title}</strong>}
           <span class="meta">{c.data.issuer} · {c.data.date}</span>
         </li>
       ))}

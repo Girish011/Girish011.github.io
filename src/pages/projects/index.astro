@@ -4,7 +4,10 @@ import Base from '../../layouts/Base.astro';
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 ---
 <Base title="Projects">
-  <h1>Projects</h1>
+  <header class="page-head">
+    <h1>Projects</h1>
+    <p class="lede">Things I have built, with the write-ups that go with them.</p>
+  </header>
   {projects.length === 0 ? <p class="empty">Nothing here yet.</p> :
     <ul class="cards">
       {projects.map((p) => (

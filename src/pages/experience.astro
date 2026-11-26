@@ -5,10 +5,13 @@ const jobs = (await getCollection('experience')).sort((a, b) => a.data.order - b
 const rendered = await Promise.all(jobs.map(async (j) => ({ j, Content: (await render(j)).Content })));
 ---
 <Base title="Experience">
-  <h1>Experience</h1>
+  <header class="page-head">
+    <h1>Experience</h1>
+    <p class="lede">Where I have worked and what I did there.</p>
+  </header>
   {rendered.length === 0 ? <p class="empty">Work experience will be listed here.</p> :
     rendered.map(({ j, Content }) => (
-      <section>
+      <section class="job">
         <h2>{j.data.role}, {j.data.company}</h2>
         <p class="meta">{j.data.start} to {j.data.end}</p>
         <div class="prose"><Content /></div>

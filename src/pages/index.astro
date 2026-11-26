@@ -4,12 +4,25 @@ import Base from '../layouts/Base.astro';
 
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 const featured = projects.filter((p) => p.data.featured);
+const posts = (await getCollection('blog'))
+  .sort((a, b) => (b.data.date?.valueOf() ?? 0) - (a.data.date?.valueOf() ?? 0) || b.data.order - a.data.order)
+  .slice(0, 4);
 ---
 <Base title="Girish" description="Portfolio of Girish: projects, writing, papers, certifications and experience.">
-  <h1>Hi, I'm Girish.</h1>
-  <p class="lede">I build machine-learning systems and write up what works and what does not. This site collects my projects, blog posts, papers, certifications and work experience.</p>
+  <section class="hero">
+    <p class="kicker">Machine learning engineer</p>
+    <h1>Hi, I'm Girish.</h1>
+    <p class="lede">I build machine-learning systems and write up what works and what does not. This site collects my projects, blog posts, papers, certifications and work experience.</p>
+    <div class="actions">
+      <a class="btn" href="/projects/">View projects</a>
+      <a class="btn secondary" href="/blog/">Read the blog</a>
+    </div>
+  </section>
 
-  <h2>Featured projects</h2>
+  <div class="section-head">
+    <h2>Featured projects</h2>
+    <a href="/projects/">All projects &rarr;</a>
+  </div>
   {featured.length === 0
     ? <p class="empty">Projects are coming soon.</p>
     : <ul class="cards">
@@ -21,5 +34,21 @@ const featured = projects.filter((p) => p.data.featured);
           </li>
         ))}
       </ul>}
-  <p><a href="/projects/">All projects</a> · <a href="/blog/">All writing</a></p>
+
+  {posts.length > 0 && (
+    <>
+      <div class="section-head">
+        <h2>Latest writing</h2>
+        <a href="/blog/">All posts &rarr;</a>
+      </div>
+      <ol class="series">
+        {posts.map((p) => (
+          <li>
+            <span class="num">{String(p.data.order).padStart(2, '0')}</span>
+            <div><a href={`/blog/${p.id}/`}>{p.data.title}</a><span class="meta">{p.data.description}</span></div>
+          </li>
+        ))}
+      </ol>
+    </>
+  )}
 </Base>
