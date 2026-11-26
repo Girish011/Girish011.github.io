@@ -117,8 +117,8 @@ p { margin: 0 0 1em; }
 
 /* Home */
 .hello { max-width: var(--measure); margin-bottom: 40px; }
-.hello h1 { font-size: clamp(2.6rem, 6vw, 4.2rem); line-height: 1; letter-spacing: -0.035em; }
-.hello p { font-size: 1.3rem; line-height: 1.55; margin: 0; }
+.hello h1 { font-size: clamp(1.9rem, 3.6vw, 2.7rem); line-height: 1.1; letter-spacing: -0.03em; max-width: 20em; margin-bottom: 0.5em; }
+.hello p { font-size: 1.2rem; line-height: 1.55; margin: 0; color: var(--graphite); }
 
 .plot { margin: 0 0 64px; max-width: 54rem; }
 .plot-frame { border: 1px solid var(--grid-strong); padding: 12px 8px 4px; }
