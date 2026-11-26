@@ -6,14 +6,17 @@ const papers = (await getCollection('papers')).sort((a, b) => b.data.year - a.da
 <Base title="Papers">
   <header class="page-head">
     <h1>Papers</h1>
-    <p class="lede">Research papers and preprints.</p>
+    <p class="deck">Research papers and preprints.</p>
   </header>
   {papers.length === 0 ? <p class="empty">Papers will be listed here.</p> :
-    <ul class="list">
+    <ul class="entries">
       {papers.map((p) => (
-        <li>
-          {p.data.url ? <a href={p.data.url}>{p.data.title}</a> : <strong>{p.data.title}</strong>}
-          <span class="meta">{p.data.authors} · {p.data.venue}, {p.data.year}</span>
+        <li class="entry">
+          <div class="when">{p.data.year}</div>
+          <div>
+            <h3>{p.data.url ? <a href={p.data.url}>{p.data.title}</a> : p.data.title}</h3>
+            <p class="meta">{p.data.authors}. {p.data.venue}.</p>
+          </div>
         </li>
       ))}
     </ul>}

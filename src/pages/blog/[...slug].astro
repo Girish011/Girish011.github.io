@@ -18,16 +18,16 @@ const project = projects.find((p) => p.id === entry.data.project);
 <Base title={entry.data.title} description={entry.data.description}>
   <article>
     <header class="post-head">
-      {project && <p class="kicker"><a href={`/projects/${project.id}/`}>{project.data.title}</a> · Part {entry.data.order} of {total}</p>}
+      {project && <p class="crumb">Part {entry.data.order} of {total} in <a href={`/projects/${project.id}/`}>{project.data.title}</a></p>}
       <h1>{entry.data.title}</h1>
-      <p class="lede">{entry.data.description}</p>
+      <p class="deck">{entry.data.description}</p>
     </header>
     <div class="prose"><Content /></div>
   </article>
   {(prev || next) && (
     <nav class="post-nav" aria-label="Series">
-      {prev && <a class="prev" href={`/blog/${prev.id}/`}><small>&larr; Previous</small>{prev.data.title}</a>}
-      {next && <a class="next" href={`/blog/${next.id}/`}><small>Next &rarr;</small>{next.data.title}</a>}
+      {prev && <a class="prev" href={`/blog/${prev.id}/`}><small>Previous, part {prev.data.order}</small><span>{prev.data.title}</span></a>}
+      {next && <a class="next" href={`/blog/${next.id}/`}><small>Next, part {next.data.order}</small><span>{next.data.title}</span></a>}
     </nav>
   )}
 </Base>

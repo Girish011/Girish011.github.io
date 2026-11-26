@@ -8,18 +8,18 @@ const groups = projects
   .map((proj) => ({ proj, posts: posts.filter((p) => p.data.project === proj.id).sort((a, b) => a.data.order - b.data.order) }))
   .filter((g) => g.posts.length > 0);
 ---
-<Base title="Blog">
+<Base title="Writing">
   <header class="page-head">
-    <h1>Blog</h1>
-    <p class="lede">Writing, grouped by project and read in order.</p>
+    <h1>Writing</h1>
+    <p class="deck">Each project gets a series. Read them in order; each post picks up where the last one stopped.</p>
   </header>
-  {groups.length === 0 ? <p class="empty">No posts yet.</p> : groups.map((g) => (
-    <section class="project-group">
+  {groups.length === 0 ? <p class="empty">Posts will be listed here.</p> : groups.map((g) => (
+    <section class="series-group">
       <h2><a href={`/projects/${g.proj.id}/`}>{g.proj.data.title}</a></h2>
       <ol class="series">
         {g.posts.map((p) => (
           <li>
-            <span class="num">{String(p.data.order).padStart(2, '0')}</span>
+            <span class="num" aria-hidden="true">{p.data.order}</span>
             <div><a href={`/blog/${p.id}/`}>{p.data.title}</a><span class="meta">{p.data.description}</span></div>
           </li>
         ))}

@@ -1,54 +1,118 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import subs from '../data/rsna-submissions.json';
 
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 const featured = projects.filter((p) => p.data.featured);
-const posts = (await getCollection('blog'))
-  .sort((a, b) => (b.data.date?.valueOf() ?? 0) - (a.data.date?.valueOf() ?? 0) || b.data.order - a.data.order)
-  .slice(0, 4);
+const posts = (await getCollection('blog')).sort((a, b) => a.data.order - b.data.order);
+
+// Every scored RSNA knee submission, plotted on the page's own graph paper.
+const W = 760, H = 300, L = 40, R = 150, T = 14, B = 30;
+const time = (d: string) => Date.parse(d.replace(' ', 'T') + ':00Z');
+const t0 = time(subs[0].d), t1 = time(subs[subs.length - 1].d);
+const y0 = 0.5, y1 = 0.98;
+const x = (d: string) => L + ((time(d) - t0) / (t1 - t0)) * (W - L - R);
+const y = (v: number) => T + ((y1 - v) / (y1 - y0)) * (H - T - B);
+const f = (n: number) => n.toFixed(1);
+
+let best = -1;
+const dots = subs.map((s) => {
+  const rec = s.pub > best;
+  if (rec) best = s.pub;
+  return { cx: x(s.d), cy: y(s.pub), rec, best };
+});
+let path = `M${f(dots[0].cx)},${f(y(dots[0].best))}`;
+let len = 0, px = dots[0].cx, py = y(dots[0].best);
+for (const d of dots.slice(1)) {
+  const ny = y(d.best);
+  path += `H${f(d.cx)}V${f(ny)}`;
+  len += Math.abs(d.cx - px) + Math.abs(ny - py);
+  px = d.cx; py = ny;
+}
+const endX = x(subs[subs.length - 1].d);
+const yticks = [0.6, 0.7, 0.8, 0.9];
+const xticks = ['2026-09-01', '2026-09-15', '2026-10-01', '2026-10-15'].map((d) => ({
+  x: x(d + ' 00:00'),
+  label: new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }),
+}));
+const first = dots[0];
+const probes = subs.filter((s) => s.pub < 0.6);
+const probeX = Math.max(...probes.map((s) => x(s.d)));
 ---
-<Base title="Girish" description="Portfolio of Girish: projects, writing, papers, certifications and experience.">
-  <section class="hero">
-    <p class="kicker">Machine learning engineer</p>
-    <h1>Hi, I'm Girish.</h1>
-    <p class="lede">I build machine-learning systems and write up what works and what does not. This site collects my projects, blog posts, papers, certifications and work experience.</p>
-    <div class="actions">
-      <a class="btn" href="/projects/">View projects</a>
-      <a class="btn secondary" href="/blog/">Read the blog</a>
-    </div>
+<Base title="Girish" description="Girish builds machine-learning systems and writes up what worked and what did not.">
+  <section class="hello">
+    <h1>Girish</h1>
+    <p>I build machine-learning systems, then check whether they really worked. This is where the projects, the write-ups and the numbers live.</p>
   </section>
 
-  <div class="section-head">
-    <h2>Featured projects</h2>
-    <a href="/projects/">All projects &rarr;</a>
-  </div>
-  {featured.length === 0
-    ? <p class="empty">Projects are coming soon.</p>
-    : <ul class="cards">
+  <figure class="plot">
+    <div class="plot-frame graph">
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="plot-cap">
+        {yticks.map((v) => (
+          <>
+            <line class="axis" x1={L} x2={endX} y1={y(v)} y2={y(v)} stroke-dasharray="2 4" />
+            <text class="tick" x={L - 8} y={y(v) + 4} text-anchor="end">{v.toFixed(1)}</text>
+          </>
+        ))}
+        <line class="axis" x1={L} x2={endX} y1={H - B} y2={H - B} />
+        {xticks.map((t) => <text class="tick" x={t.x} y={H - 8} text-anchor="middle">{t.label}</text>)}
+        {dots.map((d) => <circle class={d.rec ? 'dot rec' : 'dot'} cx={f(d.cx)} cy={f(d.cy)} r={d.rec ? 3.4 : 3} />)}
+        <path class="best" d={path} style={`--len:${Math.ceil(len)}`} />
+        <text class="note-sub" x={first.cx + 2} y={first.cy - 10}>first try, 0.682</text>
+        <text class="note-sub" x={probeX} y={y(0.533) - 12} text-anchor="end">17 probes, one label scored at a time</text>
+        <circle class="final" cx={endX} cy={y(0.958)} r="6" />
+        <circle class="priv" cx={endX} cy={y(0.942)} r="5" />
+        <line class="lead" x1={endX + 9} x2={endX + 18} y1={y(0.958)} y2={y(0.958) - 18} />
+        <text class="note" x={endX + 20} y={y(0.958) - 26}>0.958 public</text>
+        <line class="lead" x1={endX + 8} x2={endX + 18} y1={y(0.942)} y2={y(0.942) + 20} />
+        <text class="note" x={endX + 20} y={y(0.942) + 28}>0.942 private</text>
+        <text class="note-sub" x={endX + 20} y={y(0.942) + 44}>rank 1,336 of 6,425</text>
+      </svg>
+    </div>
+    <script is:inline>
+      // On narrow screens the plot scrolls sideways; open it on the finish, where the results are.
+      (function () { const f = document.currentScript.previousElementSibling; f.scrollLeft = f.scrollWidth; })();
+    </script>
+    <figcaption id="plot-cap">
+      All {subs.length} scored submissions to the RSNA knee MRI competition, 27 August to 22 October 2026. Each dot is one submission. The line is the best public score so far. The low cluster is {probes.length} deliberate probes that scored one label at a time. The final model scored <span class="hl">0.942 on the private leaderboard</span>. <a href="/blog/rsna-knee/04-full-campaign/">How the campaign went</a>
+    </figcaption>
+  </figure>
+
+  <section class="home-block">
+    <div class="section-title">
+      <h2>Projects</h2>
+      <a href="/projects/">See all</a>
+    </div>
+    {featured.length === 0 ? <p class="empty">Projects will be listed here.</p> :
+      <ul class="entries">
         {featured.map((p) => (
-          <li class="card">
-            <h3><a href={`/projects/${p.id}/`}>{p.data.title}</a></h3>
-            <p>{p.data.summary}</p>
-            <ul class="tags">{p.data.tags.map((t) => <li>{t}</li>)}</ul>
+          <li class="entry">
+            <div class="when">{p.data.period ?? ''}</div>
+            <div>
+              <h3><a href={`/projects/${p.id}/`}>{p.data.title}</a></h3>
+              <p>{p.data.summary}</p>
+              {p.data.tags.length > 0 && <p class="tags">{p.data.tags.join(', ')}</p>}
+            </div>
           </li>
         ))}
       </ul>}
+  </section>
 
   {posts.length > 0 && (
-    <>
-      <div class="section-head">
-        <h2>Latest writing</h2>
-        <a href="/blog/">All posts &rarr;</a>
+    <section class="home-block">
+      <div class="section-title">
+        <h2>Writing</h2>
+        <a href="/blog/">See all</a>
       </div>
       <ol class="series">
         {posts.map((p) => (
           <li>
-            <span class="num">{String(p.data.order).padStart(2, '0')}</span>
+            <span class="num" aria-hidden="true">{p.data.order}</span>
             <div><a href={`/blog/${p.id}/`}>{p.data.title}</a><span class="meta">{p.data.description}</span></div>
           </li>
         ))}
       </ol>
-    </>
+    </section>
   )}
 </Base>

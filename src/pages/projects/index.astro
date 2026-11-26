@@ -6,15 +6,18 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 <Base title="Projects">
   <header class="page-head">
     <h1>Projects</h1>
-    <p class="lede">Things I have built, with the write-ups that go with them.</p>
+    <p class="deck">What I built, when, and where the write-up is.</p>
   </header>
-  {projects.length === 0 ? <p class="empty">Nothing here yet.</p> :
-    <ul class="cards">
+  {projects.length === 0 ? <p class="empty">Projects will be listed here.</p> :
+    <ul class="entries">
       {projects.map((p) => (
-        <li class="card">
-          <h3><a href={`/projects/${p.id}/`}>{p.data.title}</a></h3>
-          <p>{p.data.summary}</p>
-          <ul class="tags">{p.data.tags.map((t) => <li>{t}</li>)}</ul>
+        <li class="entry">
+          <div class="when">{p.data.period ?? ''}</div>
+          <div>
+            <h3><a href={`/projects/${p.id}/`}>{p.data.title}</a></h3>
+            <p>{p.data.summary}</p>
+            {p.data.tags.length > 0 && <p class="tags">{p.data.tags.join(', ')}</p>}
+          </div>
         </li>
       ))}
     </ul>}

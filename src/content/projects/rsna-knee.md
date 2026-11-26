@@ -3,6 +3,7 @@ title: RSNA Knee Abnormality Detection
 summary: "A four-week Kaggle campaign on knee MRI: what we built, what the leaderboard said, what the winners did, and what an agent-driven experiment search did and did not do."
 tags: [Kaggle, Medical imaging, Deep learning, LLM agents]
 repo: https://github.com/Girish011/RSNA_Knee_Abnormality_Detection_Model
+period: "Aug to Oct 2026"
 featured: true
 order: 1
 ---

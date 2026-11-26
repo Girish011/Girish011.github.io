@@ -7,14 +7,18 @@ const rendered = await Promise.all(jobs.map(async (j) => ({ j, Content: (await r
 <Base title="Experience">
   <header class="page-head">
     <h1>Experience</h1>
-    <p class="lede">Where I have worked and what I did there.</p>
+    <p class="deck">Where I have worked and what I did there.</p>
   </header>
   {rendered.length === 0 ? <p class="empty">Work experience will be listed here.</p> :
-    rendered.map(({ j, Content }) => (
-      <section class="job">
-        <h2>{j.data.role}, {j.data.company}</h2>
-        <p class="meta">{j.data.start} to {j.data.end}</p>
-        <div class="prose"><Content /></div>
-      </section>
-    ))}
+    <ul class="entries">
+      {rendered.map(({ j, Content }) => (
+        <li class="entry">
+          <div class="when">{j.data.start} to {j.data.end}</div>
+          <div>
+            <h3>{j.data.role}, {j.data.company}</h3>
+            <div class="prose"><Content /></div>
+          </div>
+        </li>
+      ))}
+    </ul>}
 </Base>
